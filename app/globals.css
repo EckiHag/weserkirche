@@ -24,3 +24,87 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.windmill {
+  position: relative;
+  width: 220px;
+  height: 300px;
+  margin: 40px auto;
+}
+
+.tower {
+  position: absolute;
+  bottom: 0;
+  left: 75px;
+  width: 70px;
+  height: 170px;
+  background: #d9b382;
+  clip-path: polygon(20% 0, 80% 0, 100% 100%, 0 100%);
+}
+
+.roof {
+  position: absolute;
+  bottom: 165px;
+  left: 58px;
+  width: 104px;
+  height: 55px;
+  background: #8b3a2b;
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+}
+
+.blades {
+  position: absolute;
+  left: 110px;
+  top: 78px;
+  width: 0;
+  height: 0;
+  animation: drehen 3s linear infinite;
+  transform-origin: center center;
+}
+
+.blade {
+  position: absolute;
+  left: -6px;
+  top: -85px;
+  width: 12px;
+  height: 85px;
+  background: #444;
+  border-radius: 8px;
+  transform-origin: 50% 100%;
+}
+
+.blade1 {
+  transform: rotate(0deg);
+}
+
+.blade2 {
+  transform: rotate(90deg);
+}
+
+.blade3 {
+  transform: rotate(180deg);
+}
+
+.blade4 {
+  transform: rotate(270deg);
+}
+
+.center {
+  position: absolute;
+  left: 100px;
+  top: 68px;
+  width: 20px;
+  height: 20px;
+  background: #222;
+  border-radius: 50%;
+  z-index: 2;
+}
+
+@keyframes drehen {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
