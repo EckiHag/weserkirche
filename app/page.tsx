@@ -44,6 +44,46 @@ function uhrzeitFormatieren(datum: string) {
   }).format(new Date(datum));
 }
 
+// Die Farben wechseln von Datum zu Datum.
+// Vollständige Klassennamen, damit Tailwind sie erkennt.
+const tagesFarben = [
+  {
+    hintergrund: "bg-blue-50",
+    rand: "border-blue-500",
+    text: "text-blue-800",
+  },
+  {
+    hintergrund: "bg-amber-50",
+    rand: "border-amber-500",
+    text: "text-amber-800",
+  },
+  {
+    hintergrund: "bg-emerald-50",
+    rand: "border-emerald-500",
+    text: "text-emerald-800",
+  },
+  {
+    hintergrund: "bg-violet-50",
+    rand: "border-violet-500",
+    text: "text-violet-800",
+  },
+  {
+    hintergrund: "bg-rose-50",
+    rand: "border-rose-500",
+    text: "text-rose-800",
+  },
+];
+
+// Datum ohne Uhrzeit – maßgeblich ist die deutsche Zeitzone.
+function tagesSchluessel(datum: string) {
+  return new Intl.DateTimeFormat("de-DE", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    timeZone: "Europe/Berlin",
+  }).format(new Date(datum));
+}
+
 export default async function ChurchToolsPage() {
   const baseUrl = process.env.CHURCHTOOLS_URL;
   const token = process.env.CHURCHTOOLS_TOKEN;
@@ -99,6 +139,12 @@ export default async function ChurchToolsPage() {
     }
   }
 
+  // Die Termine sind bereits chronologisch sortiert.
+  // Jedes neue Datum bekommt die nächste Farbe.
+  const tage = [...new Set(termine.map(({ appointment }) => tagesSchluessel(appointment.calculated.startDate)))];
+
+  const farbenNachDatum = new Map(tage.map((tag, index) => [tag, tagesFarben[index % tagesFarben.length]]));
+
   return (
     <main className="min-h-screen bg-slate-100 px-4 py-10 text-slate-900 sm:px-6">
       <div className="mx-auto max-w-4xl">
@@ -108,8 +154,6 @@ export default async function ChurchToolsPage() {
           <p className="mb-2 text-sm font-semibold uppercase tracking-widest text-blue-200">Schlüsselburg Heimsen Windheim Lahde</p>
 
           <h1 className="text-3xl font-bold sm:text-4xl">Unsere Gottesdienste</h1>
-
-          <p className="mt-3 text-lg text-blue-100">Oktober 2026</p>
         </header>
 
         {fehler ? (
@@ -129,11 +173,11 @@ export default async function ChurchToolsPage() {
               <div className="space-y-5">
                 {termine.map(({ appointment }) => {
                   const { base, calculated } = appointment;
-
+                  const farbe = farbenNachDatum.get(tagesSchluessel(calculated.startDate)) ?? tagesFarben[0];
                   return (
-                    <article key={`${base.id}-${calculated.startDate}`} className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-                      <div className="border-l-4 border-blue-600 p-6 sm:p-8">
-                        <p className="text-sm font-semibold text-blue-700">{datumFormatieren(calculated.startDate)}</p>
+                    <article key={`${base.id}-${calculated.startDate}`} className={`overflow-hidden rounded-2xl border border-slate-200 shadow-sm ${farbe.hintergrund}`}>
+                      <div className={`border-l-4 p-6 sm:p-8 ${farbe.rand}`}>
+                        <p className={`text-sm font-semibold ${farbe.text}`}>{datumFormatieren(calculated.startDate)}</p>
 
                         <h2 className="mt-2 text-xl font-bold sm:text-2xl">{base.title}</h2>
 
