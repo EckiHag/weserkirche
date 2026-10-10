@@ -74,6 +74,25 @@ const tagesFarben = [
   },
 ];
 
+function beschreibungMitLinks(text: string) {
+  // Erkennt normale URLs und Links im Format [Text](URL).
+  const teile = text.split(/(\[[^\]]+\]\(https?:\/\/[^\s)]+\)|https?:\/\/[^\s<>()]+)/g);
+
+  return teile.map((teil, index) => {
+    const markdownLink = teil.match(/^\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)$/);
+
+    const url = markdownLink ? markdownLink[2] : /^https?:\/\//.test(teil) ? teil : null;
+
+    if (!url) return teil;
+
+    return (
+      <a key={index} href={url} target="_blank" rel="noopener noreferrer" className="break-all font-medium text-blue-700 underline hover:text-blue-900">
+        {markdownLink ? markdownLink[1] : teil}
+      </a>
+    );
+  });
+}
+
 // Datum ohne Uhrzeit – maßgeblich ist die deutsche Zeitzone.
 function tagesSchluessel(datum: string) {
   return new Intl.DateTimeFormat("de-DE", {
@@ -201,7 +220,7 @@ export default async function ChurchToolsPage() {
                           <details className="mt-6 border-t border-slate-100 pt-4">
                             <summary className="cursor-pointer font-medium text-blue-700">Weitere Informationen und Dienstplan</summary>
 
-                            <p className="mt-4 whitespace-pre-wrap break-words text-sm leading-7 text-slate-600">{base.description}</p>
+                            <p className="mt-4 whitespace-pre-wrap wrap-break-word text-sm leading-7 text-slate-600">{beschreibungMitLinks(base.description)}</p>
                           </details>
                         )}
                       </div>
